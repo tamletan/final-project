@@ -4,6 +4,7 @@ import email
 import imaplib
 import argparse
 import pandas as pd
+import time
 
 from email.header import decode_header
 from bs4 import BeautifulSoup
@@ -15,7 +16,7 @@ def get_auth(cred):
 	df = pd.read_csv(cred)
 	return df['usr'][0], df['pwd'][0]
 
-def read_imap(cred):
+def read_imap(cred, indexs):
 	# create an IMAP4 class with SSL 
 	imap = imaplib.IMAP4_SSL("imap.gmail.com", '993')
 	username, password = get_auth(cred)
@@ -35,8 +36,8 @@ def read_imap(cred):
 
 	for i in range(N, 0, -1):
 		utl.show_bar(i, N, 50)
-		if i<N-10:
-			break
+		if i in indexs:
+			continue
 
 		# fetch the email message by ID
 		res, msg = imap.fetch(str(i), "(RFC822)")
@@ -68,28 +69,28 @@ def read_imap(cred):
 								continue
 							if content_type == "text/plain" and "attachment" not in content_disposition:
 								multi.append(body)
-						multi_str = '\r\n'.join(multi)
-						bodys.append(multi_str)
+						text = '\r\n'.join(multi)
 					else:
 						# extract content type of email
 						content_type = msg.get_content_type()
 						# get the email body
 						body = msg.get_payload(decode=True).decode()
 						if content_type == "text/plain":
-							bodys.append(body)
+							text = body
 						if content_type == "text/html":
 							soup = BeautifulSoup(body, features="lxml")
 							text = soup.get_text()
-							bodys.append(text)
 						else:
 							continue
 
+					bodys.append(text)
 					ids.append(str(i))
 					froms.append(from_)
 					subjects.append(subject)
-			except Exception as e:
-				err.append(index)
-				print(e)
+				else:
+					raise
+			except:
+				err.append(str(i))
 				continue
 
 	print('\n\n')
@@ -97,6 +98,13 @@ def read_imap(cred):
 	imap.logout()
 
 	return ids, froms, subjects, bodys, err
+
+def load_data(output_path):
+	if os.path.isfile(output_path):
+		df = pd.read_csv(output_path)
+		indexs = [i for i in df['ID']]
+		return indexs, df
+	return [], None
 
 def clean_title(from_, sub_):
 	bad_chars = ['/','\\',':','*','?','"','<','>','|']
@@ -131,20 +139,43 @@ def validate(args):
 	utl.create_parent(args['gmail'])
 	return True, ''
 
-def main(credentials, gmail_csv, err_path):
-	ids, froms, subjects, bodys, err = read_imap(credentials)
-
-	utl.write_log(err_path, err)
-
-	dict_ = {'ID': ids, 'From': froms, 'Sub':subjects, 'body':bodys}
-	df = pd.DataFrame(dict_)
-
+def filter_en_only(df):
 	df = fte.add_lang(df)
 	en = fte.filter_en(df)
 	df.drop(en.index, inplace=True)
 	df.drop(['Lang'], axis=1, inplace=True)
+	return df
 
+def prefix_filename(child_path, prefix):
+	sub = child_path.split(os.path.sep)
+	parent = os.path.sep.join(sub[0:-1])
+	child = prefix + sub[-1]
+	return os.path.join(parent, child)
+
+def main(credentials, gmail_csv, err_path):
+	indexs, df_ = load_data(gmail_csv)
+
+	ids, froms, subjects, bodys, err = read_imap(credentials, indexs)
+	print(len(ids),len(froms),len(subjects),len(bodys))
+
+	timestr = time.strftime("%Y%m%d-%H%M%S_")
+	utl.write_log(prefix_filename(err_path, timestr), err)
+
+	dict_ = {'ID': ids, 'From': froms, 'Sub':subjects, 'body':bodys}
+	df = pd.DataFrame(dict_)
+
+	if df.empty:
+		return
+	elif df_ is not None:
+		df.append(df_, ignore_index=True)
+		
 	df.to_csv(gmail_csv, index=False)
+	print('Save to {}'.format(gmail_csv))
+
+	df = filter_en_only(df)
+	enonly = prefix_filename(gmail_csv,'en_')
+	df.to_csv(enonly, index=False)
+	print('Save to {}'.format(enonly))
 
 if __name__ == '__main__':
 	args = parser()
