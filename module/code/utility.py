@@ -9,7 +9,7 @@ def create_parent(child_path):
 
 def show_bar(i, count, size):
 	x = int(size * i / count)
-	stdout.write("{:} [{:}{:}] {:}/{:}\r".format('Email', '#'*(size-x), '.'*x, i, count))
+	stdout.write("{:} [{:}{:}] {:5}/{:}\r".format('Email', '#'*(size-x), '.'*x, i, count))
 	stdout.flush()
 
 def write_log(path, data):
