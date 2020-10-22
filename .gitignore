@@ -146,3 +146,4 @@ dmypy.json
 
 dataset/
 test/data/
+*.csv

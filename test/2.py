@@ -63,8 +63,8 @@ def get_file(dataset):
 			continue
 
 		if files:
+			print(dirs)
 			for file in files:
-				print(dirs)
 				f.append(os.path.join(dirs,file))
 
 		count += 1
