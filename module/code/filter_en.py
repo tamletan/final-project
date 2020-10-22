@@ -6,8 +6,7 @@ import numpy as np
 
 DetectorFactory.seed = 0
 
-def add_lang(path):
-	df = pd.read_csv(path)
+def add_lang(df):
 	langs = []
 	for text in df['body']:
 		try:
@@ -17,6 +16,7 @@ def add_lang(path):
 			langs.append(np.nan)
 
 	df['Lang'] = langs
+	print(df['Lang'].value_counts())
 	df.dropna(subset=['body','Lang'], inplace=True)
 	return df
 
@@ -31,11 +31,11 @@ def check_rate(text):
 	print(detect_langs(text))
 
 if __name__ == '__main__':
-	data_path = r'.\data\gmail.csv'
-	temp = r'.\data\lang_detect.csv'
-	en_only = r'.\data\lang_en.csv'
+	data_path = r'..\data\gmail.csv'
+	en_only = r'..\data\gmail_en.csv'
 
-	df = add_lang(data_path)
+	df = pd.read_csv(data_path)
+	df = add_lang(df)
 	
 	en = filter_en(df)
 	df.drop(en.index, inplace=True)

@@ -2,22 +2,18 @@ import os
 import re
 import email
 import imaplib
+import argparse
 import pandas as pd
+
 from email.header import decode_header
 from bs4 import BeautifulSoup
+
+import filter_en as fte
+import utility as utl
 
 def get_auth(cred):
 	df = pd.read_csv(cred)
 	return df['usr'][0], df['pwd'][0]
-
-def clean_title(from_, sub_):
-	for i in bad_chars :
-		sub_ = sub_.replace(i,' ')
-		from_ = from_.replace(i,' ')
-
-	sub_ = re.sub(r'\s+',' ',sub_).strip()
-	from_ = re.sub(r'\s+',' ',from_)
-	return from_, sub_
 
 def read_imap(cred):
 	# create an IMAP4 class with SSL 
@@ -28,22 +24,21 @@ def read_imap(cred):
 
 	status, messages = imap.select("INBOX")
 	# total number of emails
-	messages = int(messages[0])
-	# number of top emails to fetch
-	N = messages
-	print('Total emails: {:}'.format(messages))
+	N = int(messages[0])
+	print('Total emails: {:}'.format(N))
 
 	subjects = []
 	froms = []
 	bodys = []
 	err = []
-	bad_chars = ['/','\\',':','*','?','"','<','>','|']
 
-	for i in range(messages, messages-N, -1):
-		index = str(i)
-		print(index)
+	for i in range(N, 0, -1):
+		utl.show_bar(i, N, 50)
+		if i<N-10:
+			break
+
 		# fetch the email message by ID
-		res, msg = imap.fetch(index, "(RFC822)")
+		res, msg = imap.fetch(str(i), "(RFC822)")
 		for response in msg:
 			try:
 				if isinstance(response, tuple):
@@ -90,26 +85,72 @@ def read_imap(cred):
 
 					froms.append(from_)
 					subjects.append(subject)
-			except:
+			except Exception as e:
 				err.append(index)
+				print(e)
 				continue
 
+	print('\n\n')
 	imap.close()
 	imap.logout()
-	with open(r'..\log\error.txt', 'w') as f:
-		value = '\n'.join(err)
-		f.write(value)
-	print('Err: ', err)
-	return froms, subjects, bodys
+
+	return froms, subjects, bodys, err
+
+def clean_title(from_, sub_):
+	bad_chars = ['/','\\',':','*','?','"','<','>','|']
+	for i in bad_chars :
+		sub_ = sub_.replace(i,' ')
+		from_ = from_.replace(i,' ')
+
+	sub_ = re.sub(r'\s+',' ',sub_).strip()
+	from_ = re.sub(r'\s+',' ',from_)
+	return from_, sub_
+
+def parser():
+	ap = argparse.ArgumentParser()
+	ap.add_argument("-c", "--cred", type=str, default=r'..\data\credentials.csv',
+	help="path to input credentials csv file")
+	ap.add_argument("-g", "--gmail", type=str, default=r'..\data\gmail.csv',
+	help="path to output gmail csv file")
+	ap.add_argument("-e", "--error", type=str, default=r'..\log\error.log',
+	help="path to output error log")
+	args = vars(ap.parse_args())
+	return args
+
+def validate(args):
+	if os.path.isfile(args['cred']) and args['cred'].endswith('.csv'):
+		pass
+	else:
+		return False, 'Credential must be CSV file'
+
+	if not args['gmail'].endswith('.csv'):
+		return False, 'Gmail output must be CSV file'
+
+	utl.create_parent(args['gmail'])
+	utl.create_parent(args['error'])
+	return True, ''
 
 if __name__ == '__main__':
-	credentials = r'..\data\credentials.csv'
-	gmail_csv = r'..\data\gmail.csv'
+	args = parser()
 
-	froms, subjects, bodys = read_imap(credentials)
+	credentials = args['cred']
+	gmail_csv = args['gmail']
+	err_path = args['error']
 
-	dict_ = {'From': froms, 'Sub':subjects, 'body':bodys}
-	df = pd.DataFrame(dict_)
-	df.to_csv(gmail_csv, index=False)
+	v, m = validate(args)
+	if v:
+		froms, subjects, bodys, err = read_imap(credentials)
 
+		utl.write_log(err_path, err)
 
+		dict_ = {'From': froms, 'Sub':subjects, 'body':bodys}
+		df = pd.DataFrame(dict_)
+
+		df = fte.add_lang(df)
+		en = fte.filter_en(df)
+		df.drop(en.index, inplace=True)
+		df.drop(['Lang'], axis=1, inplace=True)
+
+		df.to_csv(gmail_csv, index=False)
+	else:
+		print('[ERROR] '.format(m))
