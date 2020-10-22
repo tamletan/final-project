@@ -27,6 +27,7 @@ def read_imap(cred):
 	N = int(messages[0])
 	print('Total emails: {:}'.format(N))
 
+	ids = []
 	subjects = []
 	froms = []
 	bodys = []
@@ -83,6 +84,7 @@ def read_imap(cred):
 						else:
 							continue
 
+					ids.append(str(i))
 					froms.append(from_)
 					subjects.append(subject)
 			except Exception as e:
@@ -94,7 +96,7 @@ def read_imap(cred):
 	imap.close()
 	imap.logout()
 
-	return froms, subjects, bodys, err
+	return ids, froms, subjects, bodys, err
 
 def clean_title(from_, sub_):
 	bad_chars = ['/','\\',':','*','?','"','<','>','|']
@@ -127,8 +129,22 @@ def validate(args):
 		return False, 'Gmail output must be CSV file'
 
 	utl.create_parent(args['gmail'])
-	utl.create_parent(args['error'])
 	return True, ''
+
+def main(credentials, gmail_csv, err_path):
+	ids, froms, subjects, bodys, err = read_imap(credentials)
+
+	utl.write_log(err_path, err)
+
+	dict_ = {'ID': ids, 'From': froms, 'Sub':subjects, 'body':bodys}
+	df = pd.DataFrame(dict_)
+
+	df = fte.add_lang(df)
+	en = fte.filter_en(df)
+	df.drop(en.index, inplace=True)
+	df.drop(['Lang'], axis=1, inplace=True)
+
+	df.to_csv(gmail_csv, index=False)
 
 if __name__ == '__main__':
 	args = parser()
@@ -137,20 +153,8 @@ if __name__ == '__main__':
 	gmail_csv = args['gmail']
 	err_path = args['error']
 
-	v, m = validate(args)
+	v, e = validate(args)
 	if v:
-		froms, subjects, bodys, err = read_imap(credentials)
-
-		utl.write_log(err_path, err)
-
-		dict_ = {'From': froms, 'Sub':subjects, 'body':bodys}
-		df = pd.DataFrame(dict_)
-
-		df = fte.add_lang(df)
-		en = fte.filter_en(df)
-		df.drop(en.index, inplace=True)
-		df.drop(['Lang'], axis=1, inplace=True)
-
-		df.to_csv(gmail_csv, index=False)
+		main(credentials, gmail_csv, err_path)
 	else:
-		print('[ERROR] '.format(m))
+		print('[ERROR] '.format(e))

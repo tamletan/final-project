@@ -44,15 +44,39 @@ def taging(index):
 		except:
 			print('Only 0 or 1!')
 
-if __name__ == '__main__':
-	path = r'..\data\gmail.csv'
-	label_log = r'..\log\label.log'
+def parser():
+	ap = argparse.ArgumentParser()
+	ap.add_argument("-d", "--data", type=str, default=r'..\data\gmail.csv',
+	help="path to input data csv file")
+	ap.add_argument("-l", "--label", type=str, default=r'..\log\label.log',
+	help="path to output label log")
+	args = vars(ap.parse_args())
+	return args
 
+def validate(args):
+	if os.path.isfile(args['data']) and args['data'].endswith('.csv'):
+		return True, ''
+	else:
+		return False, 'Data must be CSV file'
+
+def main(data_path, label_log):
 	labels = utl.read_log(label_log)
-	df = pd.read_csv(path)
+	df = pd.read_csv(data_path)
 	labels.extend(batch_mail(df, len(labels)))
 
 	os.system('cls')
 	print('Total labels: {:}'.format(len(labels)))
 
 	utl.write_log(label_log, labels)
+
+if __name__ == '__main__':
+	args = parser()
+
+	data_path = args['data']
+	label_log = args['label']
+
+	v, e = validate(args)
+	if v:
+		main(data_path, label_log)
+	else:
+		print('[ERROR] '.format(e))
