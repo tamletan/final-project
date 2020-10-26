@@ -30,6 +30,9 @@ if __name__ == '__main__':
 
 	model, optimizer, class_wts, train_dataloader, val_dataloader, test_dataloader, test_y = dproc.data_processing(df, MAX_LEN, learning_rate, batch_size)
 
+	torch.save(test_dataloader, 'saved_test_loader.pt')
+	torch.save(test_y, 'saved_test_label.pt')
+
 	# push the model to GPU
 	model = model.to(device)
 	# convert class weight to tensor
