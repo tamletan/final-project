@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
 	print('\n','='*50,'\n')
 
-	model, optimizer, class_wts, train_dataloader, val_dataloader, test_dataloader = dproc.data_processing(df, MAX_LEN, learning_rate, batch_size)
+	model, optimizer, class_wts, train_dataloader, val_dataloader, test_dataloader, test_y = dproc.data_processing(df, MAX_LEN, learning_rate, batch_size)
 
 	# push the model to GPU
 	model = model.to(device)
@@ -72,6 +72,6 @@ if __name__ == '__main__':
 	print('\n','='*50,'\n')
 
 	model.load_state_dict(torch.load('saved_weights.pt'))
-	total_preds, test_y = predict(device, model, test_dataloader)
+	total_preds = predict(device, model, test_dataloader)
 
 	preds = show_preds(total_preds, test_y)

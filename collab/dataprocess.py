@@ -87,7 +87,7 @@ def data_loader(tokens_train, train_labels, tokens_val, val_labels, tokens_test,
 	test_dataloader = DataLoader(test_data, sampler = test_sampler, batch_size=batch_size)				# dataLoader for test set
 	
 	print(" Elapsed time: {:.3f}".format(timer()-start))
-	return train_dataloader, val_dataloader, test_dataloader
+	return train_dataloader, val_dataloader, test_dataloader, test_y
 
 def load_pretrained():
 	start = timer()
@@ -260,7 +260,7 @@ def data_processing(df, MAX_LEN, learning_rate, batch_size):
 	tokens_train, tokens_val, tokens_test = tokenize(tokenizer, train_text, val_text, test_text, MAX_LEN)
 
 	# create dataloader
-	train_dataloader, val_dataloader, test_dataloader = data_loader(tokens_train, train_labels, tokens_val, val_labels, tokens_test, test_labels, batch_size)
+	train_dataloader, val_dataloader, test_dataloader, test_y = data_loader(tokens_train, train_labels, tokens_val, val_labels, tokens_test, test_labels, batch_size)
 
 	# pass the pretrained BERT to our define architecture
 	model = BERT_Arch(bert)
@@ -271,4 +271,4 @@ def data_processing(df, MAX_LEN, learning_rate, batch_size):
 	# compute class weight
 	class_wts = compute_class_weight('balanced', np.unique(train_labels), train_labels)
 
-	return model, optimizer, class_wts, train_dataloader, val_dataloader, test_dataloader
+	return model, optimizer, class_wts, train_dataloader, val_dataloader, test_dataloader, test_y

@@ -8,7 +8,6 @@ from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score
 
 def predict(device, model, test_dataloader):
 	total_preds = []
-	test_y = []
 	print("\nPredicting...")
 	start = timer()
 	pre_time = start
@@ -30,9 +29,8 @@ def predict(device, model, test_dataloader):
 			preds = model(sent_id, mask)
 			preds = preds.detach().cpu().numpy()
 			total_preds.extend(preds)
-			test_y.extend(labels)
 	print("Predict time: {:.5f}".format(timer()-start))
-	return total_preds, test_y
+	return total_preds
 
 def show_preds(total_preds, test_y):
 	preds = np.argmax(total_preds, axis = 1)
