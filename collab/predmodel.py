@@ -2,6 +2,7 @@ import torch
 from timeit import default_timer as timer
 
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score
