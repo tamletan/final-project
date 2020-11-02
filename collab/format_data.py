@@ -91,7 +91,7 @@ def create_loader(tokens, labels, batch_size, istrain):
 
 	data = TensorDataset(seq, mask, label_tensor)								# wrap tensors
 	if istrain:
-		sampler = RandomSampler(data)												# sampler for sampling the data during training
+		sampler = RandomSampler(data)											# sampler for sampling the data during training
 	else:
 		sampler = SequentialSampler(data)
 	dataloader = DataLoader(data, sampler = sampler, batch_size = batch_size)
@@ -121,6 +121,8 @@ def data_loader(tokens_train, train_labels, tokens_val, val_labels, tokens_test,
 	print(f" Elapsed time: {timer()-start:.3f}")
 
 def loss_func(device, train_labels):
+	start = timer()
+	print(format("Loss Function", '18s'), end='...')
 	# compute class weight
 	class_wts = compute_class_weight('balanced', np.unique(train_labels), train_labels)
 	# convert class weight to tensor
@@ -128,30 +130,33 @@ def loss_func(device, train_labels):
 	weights = weights.to(device)
 	# loss function
 	cross_entropy  = nn.NLLLoss(weight = weights)
-	
+	print(f" Elapsed time: {timer()-start:.3f}")
 	return cross_entropy
 
-def initial_model(device, learning_rate):
-    start = timer()
-    try:
-        model = torch.load(data_path/model_file)
-    except:
-        bert = BertModel.from_pretrained(bert_pretrain)
-        for param in bert.parameters():
-            param.requires_grad = False
-    
-        model = BERT_Arch(bert)
-        torch.save(model, data_path/model_file)
+def init_optimizer(model, learning_rate):
+	start = timer()
+	print(format("Init Optimizer", '18s'), end='...')
+	# define the optimizer
+	optimizer = AdamW(model.parameters(), lr = learning_rate)
+	print(f" Elapsed time: {timer()-start:.3f}")
+	return optimizer
 
-    print(f" Elapsed time: {timer()-start:.3f}")
-    model = model.to(device)
-    
-    start = timer()
-    # define the optimizer
-    optimizer = AdamW(model.parameters(), lr = learning_rate)
-    print(f" Elapsed time: {timer()-start:.3f}")
-    return model, optimizer
-    
+def init_model():
+	start = timer()
+	print(format("Init Model", '18s'), end='...')
+	try:
+		model = torch.load(data_path/model_file)
+	except:
+		bert = BertModel.from_pretrained(bert_pretrain)
+		for param in bert.parameters():
+			param.requires_grad = False
+
+		model = BERT_Arch(bert)
+		torch.save(model, data_path/model_file)
+
+	print(f" Elapsed time: {timer()-start:.3f}")
+	return model
+
 def procedure(path, max_len, batch_size):
 	df = load_data(path)
 	train_text, train_labels, val_text, val_labels, test_text, test_labels = split_data(df['body'], df['tag'])
