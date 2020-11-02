@@ -84,13 +84,16 @@ def tokenize(train_text, val_text, test_text, max_len):
 
 	return tokens_train, tokens_val, tokens_test
 
-def create_loader(tokens, labels, batch_size):
+def create_loader(tokens, labels, batch_size, istrain):
 	seq = torch.tensor(tokens['input_ids'])
 	mask = torch.tensor(tokens['attention_mask'])
 	label_tensor = torch.tensor(labels.tolist())
 
 	data = TensorDataset(seq, mask, label_tensor)								# wrap tensors
-	sampler = RandomSampler(data)												# sampler for sampling the data during training
+	if istrain:
+		sampler = RandomSampler(data)												# sampler for sampling the data during training
+	else:
+		sampler = SequentialSampler(data)
 	dataloader = DataLoader(data, sampler = sampler, batch_size = batch_size)
 
 	return dataloader
@@ -99,9 +102,9 @@ def data_loader(tokens_train, train_labels, tokens_val, val_labels, tokens_test,
 	start = timer()
 	print(format("Create DataLoader", '18s'), end='...')
 
-	train_dataloader = create_loader(tokens_train, train_labels, batch_size)
-	val_dataloader = create_loader(tokens_val, val_labels, batch_size)
-	test_dataloader = create_loader(tokens_test, test_labels, batch_size)
+	train_dataloader = create_loader(tokens_train, train_labels, batch_size, True)
+	val_dataloader = create_loader(tokens_val, val_labels, batch_size, False)
+	test_dataloader = create_loader(tokens_test, test_labels, batch_size, False)
 
 	print(f" Elapsed time: {timer()-start:.3f}")
 
