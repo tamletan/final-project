@@ -29,6 +29,9 @@ if __name__ == '__main__':
 	print('\n','='*50,'\n')
 
 	model, optimizer, class_wts, train_dataloader, val_dataloader, test_dataloader, test_y = dproc.data_processing(df, MAX_LEN, learning_rate, batch_size)
+	
+	torch.save(test_dataloader, 'saved_test_loader.pt')
+	torch.save(test_y, 'saved_test_label.pt')
 
 	# push the model to GPU
 	model = model.to(device)
@@ -58,7 +61,7 @@ if __name__ == '__main__':
 
 		#save the best model
 		if valid_loss < best_valid_loss:
-		best_valid_loss = valid_loss
+		    best_valid_loss = valid_loss
 		torch.save(model.state_dict(), './saved_weights.pt')
 
 		# append training and validation loss

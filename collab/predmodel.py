@@ -2,6 +2,7 @@ import torch
 from timeit import default_timer as timer
 
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, accuracy_score, roc_auc_score
@@ -35,8 +36,8 @@ def predict(device, model, test_dataloader):
 def show_preds(total_preds, test_y):
 	preds = np.argmax(total_preds, axis = 1)
 
-	print(f"""Accuray: {round(accuracy_score(test_y, preds), 5) * 100}%
-	ROC-AUC: {round(roc_auc_score(test_y, preds), 5) * 100}%""")
+	print(f"Accuray: {round(accuracy_score(test_y, preds), 5) * 100}%")
+	print(f"ROC-AUC: {round(roc_auc_score(test_y, preds), 5) * 100}%")
 
 	fig = plt.figure(figsize=(10,4))
 	heatmap = sns.heatmap(data = pd.DataFrame(confusion_matrix(test_y, preds)), annot = True, fmt = "d", cmap=sns.color_palette("Reds", 50))
