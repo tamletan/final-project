@@ -24,12 +24,7 @@ def parser():
 	return args
 
 def read_imap(cred):
-	# create an IMAP4 class with SSL 
-	imap = imaplib.IMAP4_SSL("imap.gmail.com", '993')
-	username, password = get_auth(cred)
-	# authenticate
-	imap.login(username, password)
-
+	imap = open_imap(cred)
 	status, messages = imap.select("INBOX")
 	# total number of emails
 	N = int(messages[0])
@@ -45,11 +40,21 @@ def read_imap(cred):
 				# parse a bytes email into a message object
 				msg = email.message_from_bytes(response[1])
 				get_header(msg)
-				# mark_unread(str(index))
+				mark_unread(str(index))
 				# move_trash(str(index))
 		except:
 			continue
+	close_imap(imap)
 
+def open_imap(cred):
+	# create an IMAP4 class with SSL 
+	imap = imaplib.IMAP4_SSL("imap.gmail.com", '993')
+	username, password = get_auth(cred)
+	# authenticate
+	imap.login(username, password)
+	return imap
+
+def close_imap(imap):
 	imap.expunge()
 	imap.close()
 	imap.logout()
