@@ -1,6 +1,11 @@
 import os
 import re
+import pandas as pd
 from sys import stdout
+
+def get_auth(cred):
+	df = pd.read_csv(cred)
+	return df['usr'][0], df['pwd'][0]
 
 def create_parent(child_path):
 	parent = os.path.sep.join(child_path.split(os.path.sep)[0:-1])

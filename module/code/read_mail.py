@@ -12,14 +12,10 @@ from bs4 import BeautifulSoup
 import filter_en as fte
 import utility as utl
 
-def get_auth(cred):
-	df = pd.read_csv(cred)
-	return df['usr'][0], df['pwd'][0]
-
 def read_imap(cred, indexs):
 	# create an IMAP4 class with SSL 
 	imap = imaplib.IMAP4_SSL("imap.gmail.com", '993')
-	username, password = get_auth(cred)
+	username, password = utl.get_auth(cred)
 	# authenticate
 	imap.login(username, password)
 
