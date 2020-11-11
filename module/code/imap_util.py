@@ -7,9 +7,7 @@ import pandas as pd
 import time
 
 from email.header import decode_header
-from bs4 import BeautifulSoup
 
-import filter_en as fte
 import utility as utl
 
 def parser():
@@ -25,21 +23,23 @@ def read_imap(cred):
 	# total number of emails
 	N = int(messages[0])
 	print('Total emails: {:}'.format(N))
-	index = N-1
-	print(f'Index emails: {index}')
+	
+	for i in range(N, N-50, -1):
+		index = str(i)
+		res, msg = imap.fetch(index, "(RFC822)")
+		print(index)
+		# print(msg[0][0].decode())
+		for response in msg:
+			try:
+				if isinstance(response, tuple):
+					# parse a bytes email into a message object
+					msg = email.message_from_bytes(response[1])
+					# get_header(msg)
+			except:
+				continue
+		# move_trash(imap, index)
+		mark_unread(imap, index)
 
-	res, msg = imap.fetch(str(index), "(RFC822)")
-	print(msg[0][0].decode())
-	for response in msg:
-		try:
-			if isinstance(response, tuple):
-				# parse a bytes email into a message object
-				msg = email.message_from_bytes(response[1])
-				get_header(msg)
-				mark_unread(str(index))
-				# move_trash(str(index))
-		except:
-			continue
 	close_imap(imap)
 
 def open_imap(cred):
@@ -48,6 +48,9 @@ def open_imap(cred):
 	username, password = utl.get_auth(cred)
 	# authenticate
 	imap.login(username, password)
+	status, messages = imap.select("INBOX")
+	N = int(messages[0])
+	print('Total emails: ',N)
 	return imap
 
 def close_imap(imap):
@@ -72,6 +75,23 @@ def mark_read(imap, uid):
 def mark_unread(imap, uid):
 	imap.store(uid, '-FLAGS', '\\Seen')
 
+def read_unseen(imap):
+	retcode, messages = imap.search(None, '(UNSEEN)')
+	if retcode=='OK':
+		msg = messages[0].split()
+		print('Total unseen: ',len(msg))
+		return msg
+
+def delete_by_id(imap, uid):
+	for index in uid:
+		move_trash(imap, index)
+		print('Delete mail:',index)
+
 if __name__ == '__main__':
 	args = parser()
-	read_imap(args['cred'])
+	ids = ['1650', '1640']
+	imap = open_imap(args['cred'])
+	read_unseen(imap)
+	delete_by_id(imap, ids)
+	read_unseen(imap)
+	close_imap(imap)
