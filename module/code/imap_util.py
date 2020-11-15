@@ -84,7 +84,8 @@ def read_unseen(imap):
 
 def delete_by_id(imap, uid):
 	for index in uid:
-		move_trash(imap, index)
+		mark_read(imap, index)
+		# move_trash(imap, index)
 		print('Delete mail:',index)
 
 if __name__ == '__main__':
