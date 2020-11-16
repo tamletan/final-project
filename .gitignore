@@ -147,3 +147,5 @@ dmypy.json
 dataset/
 test/data/
 *.csv
+*.pt
+*.pickle
