@@ -19,12 +19,13 @@ nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer
 from timeit import default_timer as timer
 
 def clean_content(s):
 	"""Given a sentence remove its punctuation and stop words"""
 	if not isinstance(s,str):
-	  s = str(s)																				# Convert to string
+		s = str(s)																				# Convert to string
 	s = s.lower()																				# Convert to lowercase
 	s = s.translate(str.maketrans('','',string.punctuation))									# Remove punctuation
 	s = re.sub(r'([\;\:\|â€¢Â«\n])', ' ', s)													# Remove special characters
@@ -33,8 +34,9 @@ def clean_content(s):
 	
 	tokens = word_tokenize(s)
 	stop_words = stopwords.words('english')
-	cleaned_s = ' '.join([w for w in tokens if w not in stop_words or w in ['not', 'can']])		# Remove stop-words
-	cleaned_s = re.sub(r'\s+', ' ', cleaned_s).strip()											# Replace multi whitespace with single whitespace
+	ps = PorterStemmer()
+	cleaned_s = ' '.join([ps.stem(w) for w in tokens if w not in stop_words or w in ['not', 'can']])		# Remove stop-words and stem
+	cleaned_s = re.sub(r'\s+', ' ', cleaned_s).strip()														# Replace multi whitespace with single whitespace
 	return cleaned_s
 
 def show_preds(preds, test_labels):
@@ -69,6 +71,9 @@ def load_data(path):
 	df["body"] = df["body"].apply(clean_content)
 	df.replace("", float("NaN"), inplace=True)
 	df.dropna(subset = ["body"], inplace=True)
+
+	# drop duplicates
+	df.drop_duplicates(subset=['body'],keep='first',inplace=True)
 
 	print(f" Elapsed time: {timer()-start:.3f}")
 	print(f"Number of remain rows: {df.shape[0]:,}\n")
