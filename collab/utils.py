@@ -184,6 +184,7 @@ def init_model():
 		for param in bert.parameters():
 			param.requires_grad = False
 
+		# pass the pre-trained BERT to our define architecture
 		model = BERT_Arch(bert)
 		torch.save(model, data_path/model_file)
 

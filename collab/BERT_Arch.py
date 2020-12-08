@@ -5,7 +5,7 @@ class BERT_Arch(nn.Module):
 		super(BERT_Arch, self).__init__()
 
 		self.bert = bert
-		
+
 		# dropout layer
 		self.dropout = nn.Dropout(0.1)
 
@@ -25,7 +25,7 @@ class BERT_Arch(nn.Module):
 	def forward(self, sent_id, mask):
 		#pass the inputs to the model  
 		_, cls_hs = self.bert(sent_id, attention_mask=mask)
-		
+
 		x = self.fc1(cls_hs)
 
 		x = self.relu(x)
