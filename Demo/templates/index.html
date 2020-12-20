@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>102160192</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
+</head>
+<body class="is-boxed has-animations">
+    <div style="background: linear-gradient(to left bottom, #7a56dc, #7469e3, #717ae7, #7289e9, #7897e9, #6fa5f0, #69b2f5, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);width: 100vw;height: 100vh">
+        <header >
+            <div class="container">
+                <div class="site-header-inner">
+                    <div class="brand header-brand">
+                        <h1 class="m-0">
+                            <a href="#">
+                                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <radialGradient cy="0%" fx="50%" fy="0%" r="100%" id="logo-gradient">
+                                            <stop stop-color="#FFF" offset="0%"/>
+                                            <stop stop-color="#FFF" stop-opacity=".24" offset="100%"/>
+                                        </radialGradient>
+                                    </defs>
+                                </svg>
+                            </a>
+                        </h1>
+                    </div>
+                    <ul class="header-links list-reset m-0">
+                        <h1 class="hero-title h2-mobile mt-0 is-revealing" style="color: lavender;">Graduation project</h1>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero text-light text-center">
+                <div class="container-sm">
+                    <div class="hero-inner">
+                        <h1 class="hero-title h2-mobile mt-0 is-revealing">Filtering spam Email using Natiral Learning Processing</h1>
+                        <p class="hero-paragraph is-revealing">Name: Le Tan Tam ID: 102160192</p>
+                        <div class="hero-paragraph is-revealing">
+                            <span>Result</span>
+                            <input name="result" readonly value={{result}}></input>
+                        </div>
+                        <br/>
+                        <form action="/onClick" method="POST">
+                            <textarea style="width: 100%; height: 100%;" rows="6" placeholder="Input text" name="content" id="content"></textarea>
+                            <p class="hero-cta is-revealing">
+                                <button class="button button-secondary button-shadow" style="background-image: linear-gradient(to right top, #afbccf, #9db2e7, #9da3f9, #b08eff, #d26eff);" href="#" type="submit" value="submit">Predict</button>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename = 'main.min.css') }}"></script>
+</body>
+</html>

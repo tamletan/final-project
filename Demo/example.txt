@@ -1,0 +1,60 @@
+spam = '''Spring watches models
+Luxury Replica Watches, Ties, Pens 
+We have everything you need to make someone's day complete 
+High-quality watches made with exquisite care. 
+Designer silk neckties, in a variety of styles.  
+Brand-name writing pens are sure to dazzle. 
+Beautiful Handbags, Wallets and Accessories in Spring Colors 
+Sterling Silver Tiffany Bracelets show off delicately
+Enjoy the best at a fraction of the cost. 
+ http //www.misletr.net'''
+
+========================================================================================================================================================================================================================================================================
+
+spam = '''"you have company, your highness," announced the maid, bowing"we do not need anso much from a fellow-worker.
+curtains."he's the nicest boy in the world, for he neverbeast, fearing he would be ordered out if he made any disturbance.
+it then. he had served in the crimea, and seemed to regard a dilapidated
+brother as papa has for me, your life won't be a failure,' saidat dinner, but i forgot," said beth, putting jo's topsy-turvy basketeloquence of one who had suffered and escaped, it made a deep impression'then be to others what john is to you - a good example.
+soul of the chinese. more and more chinese woke up from their paralysisand half pleased at such energetic measures.an air of relief, "that is it, and i do want someone to help me
+as to what he should wear when his one suit of clothes gave out.
+as to what he should wear when his one suit of clothes gave out.dim with dust, and wornsoon heard all the friendly criticisms passed upon him and his career,cut on all the trees and railings to remind me of my sailor boy' 
+courtyard when the game was interrupted by the abrupt entrance ofwhen she is at her little piano. amy minds me nicely, and i takethe best. people often come for that alone." and the old gentleman
+be sure  so all the passengers stayed huddled up in the dark cabin,
+more youthful than she was  while a gay dress, with gilt ear-rings,what had happened to him at first, and sat about in a dazed"i got up to seei'll just point to you, and say 'there's your model, my lads'."
+strip of emerald green  for oz had a fancy to make the balloonup and poked the book out of my hands with his rod. it fellthat it needed. lessons in patience were so sweetly taught
+i should like to know that john was firmly established in
+a bottle of june rain water, for my maid tells me it is betterunder guileless girlishness. she was very pretty, very charming,wiped his damp forehead, with a look of such deep compassionher hat a la laurie, away went jo, feeling like a shorn sheep
+him, and some were readier to open their hearts to him thanfancies if i can help it. but i think few brides dress withbuttered and sundered.
+heart. i will be patient, though your ways are not mine, for
+who won great honor for our motherland. probably, someoneyou can't miss it.read my father's books with that uncle alec slipped
+i feared it was some new terror like the old one. seventeenover the door, where he sat staring down at the company withf  i can sing an american song.
+passer-by invitingly.
+rocks, to disappear in the crowd. five, ten, fifteen minutes"i can't go till my apple"feed
+so very late?" asked dorothy. friends were the dearest people shebrought a fresh log, and a gloriousbut the superior ones are not favoritesfrom the world to nurse his wounds in
+with that uncle alec slippeddo with us. we soon got back into theleaving another line of sparks among
+we are men of our word, and off we go.have laughed till her spectacles flewthe devoted baron to her heart's content,surely will never do for a long journey,'''
+
+========================================================================================================================================================================================================================================================================
+
+legit = '''Hm... sounds like a homework problem to me...
+
+Maybe start by figuring out how to do it without R -
+what's the approach, and how would you calculate it?
+Then search R help for the possible key words you
+came up with.
+
+Sarah'''
+
+========================================================================================================================================================================================================================================================================
+
+legit = '''# New Ticket Created by  Paul Cochrane 
+# Please include the string:  [perl #42350]
+# in the subject line of all future correspondence about this issue. 
+# <URL: http://rt.perl.org/rt3/Ticket/Display.html?id=42350 >
+
+
+There is a warning in src/ops/pmc.ops within the find_type() op:
+
+KLUDGE ALERT - XXX FIXME - THIS LOGIC SHOULD BE IN pmc_type_p()
+
+This needs to be fixed.'''
